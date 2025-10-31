@@ -1,4 +1,4 @@
-// UC5: Calculating Wages for a Month
+// UC6: Calculate Wages till a condition of total working hours or days is reached
 
 const IS_ABSENT = 0;
 const IS_PART_TIME = 1;
@@ -6,7 +6,8 @@ const IS_FULL_TIME = 2;
 const WAGE_PER_HOUR = 20;
 const PART_TIME_HOURS = 4;
 const FULL_DAY_HOURS = 8;
-const WORKING_DAYS_PER_MONTH = 20;
+const MAX_WORKING_DAYS_PER_MONTH = 20;
+const MAX_WORKING_HOURS_PER_MONTH = 100;
 
 function getWorkingHours(empType) {
   switch (empType) {
@@ -37,23 +38,45 @@ function calculateDailyWage() {
   console.log(`Working Hours: ${workingHours}`);
   console.log(`Daily Employee Wage: ${dailyWage}`);
 
-  return dailyWage;
+  return { dailyWage, workingHours };
 }
 
 function calculateMonthlyWage() {
   console.log("=== Monthly Wage Calculation ===");
-  console.log(`Working Days per Month: ${WORKING_DAYS_PER_MONTH}\n`);
+  console.log(`Max Working Days: ${MAX_WORKING_DAYS_PER_MONTH}`);
+  console.log(`Max Working Hours: ${MAX_WORKING_HOURS_PER_MONTH}\n`);
 
   let totalMonthlyWage = 0;
+  let totalWorkingHours = 0;
+  let totalWorkingDays = 0;
 
-  for (let day = 1; day <= WORKING_DAYS_PER_MONTH; day++) {
-    console.log(`--- Day ${day} ---`);
-    const dailyWage = calculateDailyWage();
+  while (
+    totalWorkingDays < MAX_WORKING_DAYS_PER_MONTH &&
+    totalWorkingHours < MAX_WORKING_HOURS_PER_MONTH
+  ) {
+    totalWorkingDays++;
+    console.log(`--- Day ${totalWorkingDays} ---`);
+    
+    const { dailyWage, workingHours } = calculateDailyWage();
+    
+    // Check if adding these hours would exceed the limit
+    if (totalWorkingHours + workingHours > MAX_WORKING_HOURS_PER_MONTH) {
+      console.log(
+        `\nReached maximum working hours limit! Cannot add ${workingHours} more hours.`
+      );
+      break;
+    }
+    
     totalMonthlyWage += dailyWage;
+    totalWorkingHours += workingHours;
+    
+    console.log(`Total Hours so far: ${totalWorkingHours}`);
     console.log();
   }
 
   console.log("=================================");
+  console.log(`Total Working Days: ${totalWorkingDays}`);
+  console.log(`Total Working Hours: ${totalWorkingHours}`);
   console.log(`Total Monthly Wage: ${totalMonthlyWage}`);
   console.log("=================================");
 }
