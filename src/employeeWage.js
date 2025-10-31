@@ -1,4 +1,4 @@
-// UC7: Refactor the Code to write a Class Method to Compute Employee Wage
+// UC8: Compute Employee Wage for multiple companies
 
 class EmployeeWage {
   // Class constants
@@ -6,33 +6,15 @@ class EmployeeWage {
   static IS_PART_TIME = 1;
   static IS_FULL_TIME = 2;
 
-  // Constructor to initialize class variables
-  constructor(
-    wagePerHour,
-    partTimeHours,
-    fullDayHours,
-    maxWorkingDays,
-    maxWorkingHours
-  ) {
-    this.wagePerHour = wagePerHour;
-    this.partTimeHours = partTimeHours;
-    this.fullDayHours = fullDayHours;
-    this.maxWorkingDays = maxWorkingDays;
-    this.maxWorkingHours = maxWorkingHours;
-    this.totalMonthlyWage = 0;
-    this.totalWorkingHours = 0;
-    this.totalWorkingDays = 0;
-  }
-
   // Method to get working hours based on employee type
-  getWorkingHours(empType) {
+  getWorkingHours(empType, partTimeHours, fullDayHours) {
     switch (empType) {
       case EmployeeWage.IS_ABSENT:
         return 0;
       case EmployeeWage.IS_PART_TIME:
-        return this.partTimeHours;
+        return partTimeHours;
       case EmployeeWage.IS_FULL_TIME:
-        return this.fullDayHours;
+        return fullDayHours;
       default:
         return 0;
     }
@@ -53,10 +35,14 @@ class EmployeeWage {
   }
 
   // Method to calculate daily wage
-  calculateDailyWage() {
+  calculateDailyWage(wagePerHour, partTimeHours, fullDayHours) {
     const empType = Math.floor(Math.random() * 3);
-    const workingHours = this.getWorkingHours(empType);
-    const dailyWage = this.wagePerHour * workingHours;
+    const workingHours = this.getWorkingHours(
+      empType,
+      partTimeHours,
+      fullDayHours
+    );
+    const dailyWage = wagePerHour * workingHours;
     const empStatus = this.getEmployeeStatus(empType);
 
     console.log(`Employee is ${empStatus}`);
@@ -66,49 +52,109 @@ class EmployeeWage {
     return { dailyWage, workingHours };
   }
 
-  // Method to calculate monthly wage
-  calculateMonthlyWage() {
-    console.log("=== Monthly Wage Calculation ===");
-    console.log(`Max Working Days: ${this.maxWorkingDays}`);
-    console.log(`Max Working Hours: ${this.maxWorkingHours}\n`);
+  // Method to calculate monthly wage with parameters
+  calculateMonthlyWage(
+    companyName,
+    wagePerHour,
+    partTimeHours,
+    fullDayHours,
+    maxWorkingDays,
+    maxWorkingHours
+  ) {
+    console.log("\n╔════════════════════════════════════════╗");
+    console.log(`║  ${companyName.padEnd(38)}║`);
+    console.log("╚════════════════════════════════════════╝");
+    console.log(`Wage Per Hour: ₹${wagePerHour}`);
+    console.log(`Part Time Hours: ${partTimeHours}`);
+    console.log(`Full Day Hours: ${fullDayHours}`);
+    console.log(`Max Working Days: ${maxWorkingDays}`);
+    console.log(`Max Working Hours: ${maxWorkingHours}\n`);
+
+    let totalMonthlyWage = 0;
+    let totalWorkingHours = 0;
+    let totalWorkingDays = 0;
 
     while (
-      this.totalWorkingDays < this.maxWorkingDays &&
-      this.totalWorkingHours < this.maxWorkingHours
+      totalWorkingDays < maxWorkingDays &&
+      totalWorkingHours < maxWorkingHours
     ) {
-      this.totalWorkingDays++;
-      console.log(`--- Day ${this.totalWorkingDays} ---`);
+      totalWorkingDays++;
+      console.log(`--- Day ${totalWorkingDays} ---`);
 
-      const { dailyWage, workingHours } = this.calculateDailyWage();
+      const { dailyWage, workingHours } = this.calculateDailyWage(
+        wagePerHour,
+        partTimeHours,
+        fullDayHours
+      );
 
       // Check if adding these hours would exceed the limit
-      if (this.totalWorkingHours + workingHours > this.maxWorkingHours) {
+      if (totalWorkingHours + workingHours > maxWorkingHours) {
         console.log(
           `\nReached maximum working hours limit! Cannot add ${workingHours} more hours.`
         );
         break;
       }
 
-      this.totalMonthlyWage += dailyWage;
-      this.totalWorkingHours += workingHours;
+      totalMonthlyWage += dailyWage;
+      totalWorkingHours += workingHours;
 
-      console.log(`Total Hours so far: ${this.totalWorkingHours}`);
+      console.log(`Total Hours so far: ${totalWorkingHours}`);
       console.log();
     }
 
-    this.displayResults();
+    this.displayResults(
+      companyName,
+      totalWorkingDays,
+      totalWorkingHours,
+      totalMonthlyWage
+    );
+
+    return {
+      companyName,
+      totalWorkingDays,
+      totalWorkingHours,
+      totalMonthlyWage,
+    };
   }
 
   // Method to display final results
-  displayResults() {
-    console.log("=================================");
-    console.log(`Total Working Days: ${this.totalWorkingDays}`);
-    console.log(`Total Working Hours: ${this.totalWorkingHours}`);
-    console.log(`Total Monthly Wage: ${this.totalMonthlyWage}`);
-    console.log("=================================");
+  displayResults(
+    companyName,
+    totalWorkingDays,
+    totalWorkingHours,
+    totalMonthlyWage
+  ) {
+    console.log("═════════════════════════════════════════");
+    console.log(`Company: ${companyName}`);
+    console.log(`Total Working Days: ${totalWorkingDays}`);
+    console.log(`Total Working Hours: ${totalWorkingHours}`);
+    console.log(`Total Monthly Wage: ₹${totalMonthlyWage}`);
+    console.log("═════════════════════════════════════════");
   }
 }
 
-// Create an instance of EmployeeWage class and calculate wages
-const employeeWage = new EmployeeWage(20, 4, 8, 20, 100);
-employeeWage.calculateMonthlyWage();
+// Create an instance of EmployeeWage class
+const empWageBuilder = new EmployeeWage();
+
+// Calculate wages for multiple companies
+console.log(
+  "\n********** EMPLOYEE WAGE COMPUTATION FOR MULTIPLE COMPANIES **********\n"
+);
+
+// Company 1: Tech Solutions
+empWageBuilder.calculateMonthlyWage("Tech Solutions", 20, 4, 8, 20, 100);
+
+// Company 2: Digital Marketing Inc
+empWageBuilder.calculateMonthlyWage(
+  "Digital Marketing Inc",
+  25,
+  5,
+  10,
+  22,
+  120
+);
+
+// Company 3: Startup Hub
+empWageBuilder.calculateMonthlyWage("Startup Hub", 18, 4, 8, 18, 90);
+
+console.log("\n********** WAGE COMPUTATION COMPLETED **********\n");
