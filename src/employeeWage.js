@@ -30,6 +30,7 @@ function calculateDailyWage() {
   dailyWage = WAGE_PER_HOUR * workingHours;
   console.log(`Working Hours: ${workingHours}`);
   console.log(`Daily Employee Wage: ${dailyWage}`);
+  // usecase 4 already implemented in uc3 itself
 }
 
 // Execute the function
