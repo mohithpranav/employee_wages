@@ -1,85 +1,114 @@
-// UC6: Calculate Wages till a condition of total working hours or days is reached
+// UC7: Refactor the Code to write a Class Method to Compute Employee Wage
 
-const IS_ABSENT = 0;
-const IS_PART_TIME = 1;
-const IS_FULL_TIME = 2;
-const WAGE_PER_HOUR = 20;
-const PART_TIME_HOURS = 4;
-const FULL_DAY_HOURS = 8;
-const MAX_WORKING_DAYS_PER_MONTH = 20;
-const MAX_WORKING_HOURS_PER_MONTH = 100;
+class EmployeeWage {
+  // Class constants
+  static IS_ABSENT = 0;
+  static IS_PART_TIME = 1;
+  static IS_FULL_TIME = 2;
 
-function getWorkingHours(empType) {
-  switch (empType) {
-    case IS_ABSENT:
-      return 0;
-    case IS_PART_TIME:
-      return PART_TIME_HOURS;
-    case IS_FULL_TIME:
-      return FULL_DAY_HOURS;
-    default:
-      return 0;
-  }
-}
-
-function calculateDailyWage() {
-  const empType = Math.floor(Math.random() * 3);
-  let workingHours = getWorkingHours(empType);
-  let dailyWage = WAGE_PER_HOUR * workingHours;
-
-  const empStatus =
-    empType === IS_ABSENT
-      ? "ABSENT"
-      : empType === IS_PART_TIME
-      ? "PART TIME"
-      : "FULL TIME";
-
-  console.log(`Employee is ${empStatus}`);
-  console.log(`Working Hours: ${workingHours}`);
-  console.log(`Daily Employee Wage: ${dailyWage}`);
-
-  return { dailyWage, workingHours };
-}
-
-function calculateMonthlyWage() {
-  console.log("=== Monthly Wage Calculation ===");
-  console.log(`Max Working Days: ${MAX_WORKING_DAYS_PER_MONTH}`);
-  console.log(`Max Working Hours: ${MAX_WORKING_HOURS_PER_MONTH}\n`);
-
-  let totalMonthlyWage = 0;
-  let totalWorkingHours = 0;
-  let totalWorkingDays = 0;
-
-  while (
-    totalWorkingDays < MAX_WORKING_DAYS_PER_MONTH &&
-    totalWorkingHours < MAX_WORKING_HOURS_PER_MONTH
+  // Constructor to initialize class variables
+  constructor(
+    wagePerHour,
+    partTimeHours,
+    fullDayHours,
+    maxWorkingDays,
+    maxWorkingHours
   ) {
-    totalWorkingDays++;
-    console.log(`--- Day ${totalWorkingDays} ---`);
-    
-    const { dailyWage, workingHours } = calculateDailyWage();
-    
-    // Check if adding these hours would exceed the limit
-    if (totalWorkingHours + workingHours > MAX_WORKING_HOURS_PER_MONTH) {
-      console.log(
-        `\nReached maximum working hours limit! Cannot add ${workingHours} more hours.`
-      );
-      break;
-    }
-    
-    totalMonthlyWage += dailyWage;
-    totalWorkingHours += workingHours;
-    
-    console.log(`Total Hours so far: ${totalWorkingHours}`);
-    console.log();
+    this.wagePerHour = wagePerHour;
+    this.partTimeHours = partTimeHours;
+    this.fullDayHours = fullDayHours;
+    this.maxWorkingDays = maxWorkingDays;
+    this.maxWorkingHours = maxWorkingHours;
+    this.totalMonthlyWage = 0;
+    this.totalWorkingHours = 0;
+    this.totalWorkingDays = 0;
   }
 
-  console.log("=================================");
-  console.log(`Total Working Days: ${totalWorkingDays}`);
-  console.log(`Total Working Hours: ${totalWorkingHours}`);
-  console.log(`Total Monthly Wage: ${totalMonthlyWage}`);
-  console.log("=================================");
+  // Method to get working hours based on employee type
+  getWorkingHours(empType) {
+    switch (empType) {
+      case EmployeeWage.IS_ABSENT:
+        return 0;
+      case EmployeeWage.IS_PART_TIME:
+        return this.partTimeHours;
+      case EmployeeWage.IS_FULL_TIME:
+        return this.fullDayHours;
+      default:
+        return 0;
+    }
+  }
+
+  // Method to get employee status string
+  getEmployeeStatus(empType) {
+    switch (empType) {
+      case EmployeeWage.IS_ABSENT:
+        return "ABSENT";
+      case EmployeeWage.IS_PART_TIME:
+        return "PART TIME";
+      case EmployeeWage.IS_FULL_TIME:
+        return "FULL TIME";
+      default:
+        return "UNKNOWN";
+    }
+  }
+
+  // Method to calculate daily wage
+  calculateDailyWage() {
+    const empType = Math.floor(Math.random() * 3);
+    const workingHours = this.getWorkingHours(empType);
+    const dailyWage = this.wagePerHour * workingHours;
+    const empStatus = this.getEmployeeStatus(empType);
+
+    console.log(`Employee is ${empStatus}`);
+    console.log(`Working Hours: ${workingHours}`);
+    console.log(`Daily Employee Wage: ${dailyWage}`);
+
+    return { dailyWage, workingHours };
+  }
+
+  // Method to calculate monthly wage
+  calculateMonthlyWage() {
+    console.log("=== Monthly Wage Calculation ===");
+    console.log(`Max Working Days: ${this.maxWorkingDays}`);
+    console.log(`Max Working Hours: ${this.maxWorkingHours}\n`);
+
+    while (
+      this.totalWorkingDays < this.maxWorkingDays &&
+      this.totalWorkingHours < this.maxWorkingHours
+    ) {
+      this.totalWorkingDays++;
+      console.log(`--- Day ${this.totalWorkingDays} ---`);
+
+      const { dailyWage, workingHours } = this.calculateDailyWage();
+
+      // Check if adding these hours would exceed the limit
+      if (this.totalWorkingHours + workingHours > this.maxWorkingHours) {
+        console.log(
+          `\nReached maximum working hours limit! Cannot add ${workingHours} more hours.`
+        );
+        break;
+      }
+
+      this.totalMonthlyWage += dailyWage;
+      this.totalWorkingHours += workingHours;
+
+      console.log(`Total Hours so far: ${this.totalWorkingHours}`);
+      console.log();
+    }
+
+    this.displayResults();
+  }
+
+  // Method to display final results
+  displayResults() {
+    console.log("=================================");
+    console.log(`Total Working Days: ${this.totalWorkingDays}`);
+    console.log(`Total Working Hours: ${this.totalWorkingHours}`);
+    console.log(`Total Monthly Wage: ${this.totalMonthlyWage}`);
+    console.log("=================================");
+  }
 }
 
-// Execute the function
-calculateMonthlyWage();
+// Create an instance of EmployeeWage class and calculate wages
+const employeeWage = new EmployeeWage(20, 4, 8, 20, 100);
+employeeWage.calculateMonthlyWage();
